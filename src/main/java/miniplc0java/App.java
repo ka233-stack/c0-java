@@ -34,7 +34,6 @@ public class App {
             int size = str.length();
             for (int i = 0; i < size; i += 2) {
                 int x = Integer.parseInt("" + str.charAt(i) + str.charAt(i + 1), 16);
-                System.out.println(x);
                 output.write(x);
             }
         }
