@@ -1,11 +1,11 @@
 package test.java.c0;
 
-import c0.error.InstructionError;
-import c0.instruction.Instruction;
-import c0.instruction.Operation;
+import minplc0java.error.InstructionError;
+import minplc0java.instruction.Instruction;
+import minplc0java.instruction.Operation;
 import org.junit.Test;
 
-import static c0.instruction.Instruction.createInstruction;
+import static minplc0java.instruction.Instruction.createInstruction;
 
 public class InstructionTest {
 

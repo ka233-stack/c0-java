@@ -1,6 +1,6 @@
 package test.java.c0;
 
-import c0.tokenizer.StringIter;
+import minplc0java.tokenizer.StringIter;
 import org.junit.Test;
 
 import java.io.File;
