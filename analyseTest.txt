@@ -1,7 +1,8 @@
 fn main() -> void {
-    let x: int = 1;
-    let y: int = 2;
-    let z: int;
-    z = x + y;
-    putint(z);
+    let c: int = 0;
+    let i: int;
+    if c < 10 {
+        i = 0;
+        c = c + 1;
+    }
 }
