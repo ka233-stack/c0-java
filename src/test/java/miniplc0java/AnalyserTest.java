@@ -1,10 +1,10 @@
-package test.java.c0;
+package miniplc0java;
 
-import main.java.c0.analyser.Analyser;
-import main.java.c0.analyser.o0.O0;
-import main.java.c0.tokenizer.StringIter;
-import main.java.c0.tokenizer.TokenType;
-import main.java.c0.tokenizer.Tokenizer;
+import miniplc0java.analyser.Analyser;
+import miniplc0java.analyser.o0.O0;
+import miniplc0java.tokenizer.StringIter;
+import miniplc0java.tokenizer.TokenType;
+import miniplc0java.tokenizer.Tokenizer;
 import org.junit.Test;
 
 import java.io.*;

@@ -1,11 +1,13 @@
-package test.java.c0;
+package miniplc0java;
 
-import main.java.c0.error.InstructionError;
-import main.java.c0.instruction.Instruction;
-import main.java.c0.instruction.Operation;
+
+import miniplc0java.error.InstructionError;
+import miniplc0java.instruction.Instruction;
+import miniplc0java.instruction.Operation;
 import org.junit.Test;
 
-import static main.java.c0.instruction.Instruction.createInstruction;
+import static miniplc0java.instruction.Instruction.createInstruction;
+
 
 public class InstructionTest {
 

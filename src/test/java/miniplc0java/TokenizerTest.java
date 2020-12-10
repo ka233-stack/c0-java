@@ -1,17 +1,17 @@
-package test.java.c0;
+package miniplc0java;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import miniplc0java.tokenizer.StringIter;
+import miniplc0java.tokenizer.Token;
+import miniplc0java.tokenizer.TokenType;
+import miniplc0java.tokenizer.Tokenizer;
+import miniplc0java.util.Pos;
 import org.junit.Test;
 
-import main.java.c0.tokenizer.StringIter;
-import main.java.c0.tokenizer.Token;
-import main.java.c0.tokenizer.TokenType;
-import main.java.c0.tokenizer.Tokenizer;
-import main.java.c0.util.Pos;
 
 public class TokenizerTest {
 
