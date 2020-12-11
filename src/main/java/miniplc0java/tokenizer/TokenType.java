@@ -60,87 +60,46 @@ public enum TokenType {
 
     @Override
     public String toString() {
-        switch (this) {
-            case IDENT:
-                return "标识符";
-            case UINT_LITERAL:
-                return "无符号整数";
-            case DOUBLE_LITERAL:
-                return "浮点数";
-            case STRING_LITERAL:
-                return "字符串";
-            case CHAR_LITERAL:
-                return "字符";
-            case TY:
-                return "类型";
-            case FN:
-                return "fn";
-            case LET:
-                return "let";
-            case CONST:
-                return "const";
-            case AS:
-                return "as";
-            case WHILE:
-                return "while";
-            case IF:
-                return "if";
-            case ELSE:
-                return "else";
-            case RETURN:
-                return "return";
-            case BREAK:
-                return "break";
-            case CONTINUE:
-                return "continue";
-            case PLUS:
-                return "+";
-            case MINUS:
-                return "-";
-            case MUL:
-                return "*";
-            case DIV:
-                return "/";
-            case ASSIGN:
-                return "=";
-            case EQ:
-                return "==";
-            case NEQ:
-                return "!=";
-            case LT:
-                return "<";
-            case GT:
-                return ">";
-            case LE:
-                return "<=";
-            case GE:
-                return ">=";
-            case L_PAREN:
-                return "(";
-            case R_PAREN:
-                return ")";
-            case L_BRACE:
-                return "{";
-            case R_BRACE:
-                return "}";
-            case ARROW:
-                return "->";
-            case COMMA:
-                return ",";
-            case COLON:
-                return ":";
-            case SEMICOLON:
-                return ";";
-            case COMMENT: // 实际中不应该出现
-                return "注释";
-            case None:
-                return "空";
-            case SHARP:
-                return "#";
-            case EOF:
-                return "文件结尾";
-            default:
-                return "无效Token";
-        }
+        return switch (this) {
+            case IDENT -> "标识符";
+            case UINT_LITERAL -> "无符号整数";
+            case DOUBLE_LITERAL -> "浮点数";
+            case STRING_LITERAL -> "字符串";
+            case CHAR_LITERAL -> "字符";
+            case TY -> "类型";
+            case FN -> "fn";
+            case LET -> "let";
+            case CONST -> "const";
+            case AS -> "as";
+            case WHILE -> "while";
+            case IF -> "if";
+            case ELSE -> "else";
+            case RETURN -> "return";
+            case BREAK -> "break";
+            case CONTINUE -> "continue";
+            case PLUS -> "+";
+            case MINUS -> "-";
+            case MUL -> "*";
+            case DIV -> "/";
+            case ASSIGN -> "=";
+            case EQ -> "==";
+            case NEQ -> "!=";
+            case LT -> "<";
+            case GT -> ">";
+            case LE -> "<=";
+            case GE -> ">=";
+            case L_PAREN -> "(";
+            case R_PAREN -> ")";
+            case L_BRACE -> "{";
+            case R_BRACE -> "}";
+            case ARROW -> "->";
+            case COMMA -> ",";
+            case COLON -> ":";
+            case SEMICOLON -> ";";
+            case COMMENT -> "注释"; // 实际中不应该出现
+            case None -> "空";
+            case SHARP -> "#";
+            case EOF -> "文件结尾";
+        };
     }
 }

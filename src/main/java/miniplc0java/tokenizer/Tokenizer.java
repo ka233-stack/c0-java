@@ -92,34 +92,20 @@ public class Tokenizer {
         String value = sb.toString();
 
         // 尝试将存储的字符串解释为关键字
-        switch (value) {
-            case "fn":
-                return new Token(TokenType.FN, value, startPos, endPos);
-            case "let":
-                return new Token(TokenType.LET, value, startPos, endPos);
-            case "const":
-                return new Token(TokenType.CONST, value, startPos, endPos);
-            case "as":
-                return new Token(TokenType.AS, value, startPos, endPos);
-            case "while":
-                return new Token(TokenType.WHILE, value, startPos, endPos);
-            case "if":
-                return new Token(TokenType.IF, value, startPos, endPos);
-            case "else":
-                return new Token(TokenType.ELSE, value, startPos, endPos);
-            case "return":
-                return new Token(TokenType.RETURN, value, startPos, endPos);
-            case "break":
-                return new Token(TokenType.BREAK, value, startPos, endPos);
-            case "continue":
-                return new Token(TokenType.CONTINUE, value, startPos, endPos);
-            case "void":
-            case "int":
-            case "double":
-                return new Token(TokenType.TY, value, startPos, endPos);
-            default: // IDENT
-                return new Token(TokenType.IDENT, value, startPos, endPos);
-        }
+        return switch (value) {
+            case "fn" -> new Token(TokenType.FN, value, startPos, endPos);
+            case "let" -> new Token(TokenType.LET, value, startPos, endPos);
+            case "const" -> new Token(TokenType.CONST, value, startPos, endPos);
+            case "as" -> new Token(TokenType.AS, value, startPos, endPos);
+            case "while" -> new Token(TokenType.WHILE, value, startPos, endPos);
+            case "if" -> new Token(TokenType.IF, value, startPos, endPos);
+            case "else" -> new Token(TokenType.ELSE, value, startPos, endPos);
+            case "return" -> new Token(TokenType.RETURN, value, startPos, endPos);
+            case "break" -> new Token(TokenType.BREAK, value, startPos, endPos);
+            case "continue" -> new Token(TokenType.CONTINUE, value, startPos, endPos);
+            case "void", "int", "double" -> new Token(TokenType.TY, value, startPos, endPos);
+            default -> new Token(TokenType.IDENT, value, startPos, endPos);// IDENT
+        };
 
     }
 
@@ -181,22 +167,11 @@ public class Tokenizer {
                 it.nextChar();
                 char nextChar = it.nextChar();
                 switch (nextChar) {
-                    case '\\':
-                    case '"':
-                    case '\'':
-                        sb.append(nextChar);
-                        break;
-                    case 'n':
-                        sb.append("\n");
-                        break;
-                    case 't':
-                        sb.append("\t");
-                        break;
-                    case 'r':
-                        sb.append("\r");
-                        break;
-                    default:
-                        throw new TokenizeError(ErrorCode.InvalidInput, startPos);
+                    case '\\', '"', '\'' -> sb.append(nextChar);
+                    case 'n' -> sb.append("\n");
+                    case 't' -> sb.append("\t");
+                    case 'r' -> sb.append("\r");
+                    default -> throw new TokenizeError(ErrorCode.InvalidInput, startPos);
                 }
                 continue;
             }

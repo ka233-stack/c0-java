@@ -62,10 +62,10 @@ public enum Operation {
     PRINTLN(0x58, 0), // 0x58 println - - - 向标准输出写入一个换行
     PANIC(0xfe, 0); // 0xfe panic 恐慌（强行退出）
 
-    private int code;
-    private int paramsNum;
+    private final int code;
+    private final int paramsNum;
 
-    private Operation(int code, int paramsNum) {
+    Operation(int code, int paramsNum) {
         this.code = code;
         this.paramsNum = paramsNum;
     }
