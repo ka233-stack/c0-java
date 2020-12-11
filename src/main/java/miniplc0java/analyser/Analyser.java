@@ -469,7 +469,7 @@ public final class Analyser {
                 } else {
                     operand.push(analysePrimaryExpr(funcName, funcNo));
                 }
-            } else if (!isOp(nextOperator) || isPrecedent(topOperator, nextOperator)) { // 归约
+            } else if (!isOp(nextOperator) || !isPrecedent(nextOperator, topOperator)) { // 归约
                 if (operand.size() > 1) {
                     OperandItem operand_r = operand.pop();
                     OperandItem operand_l = operand.peek();
