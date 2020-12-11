@@ -20,6 +20,5 @@ public class App {
         O0 binCodeFile = analyser.analyse();
         binCodeFile.writeFile(output);
         output.close();
-
     }
 }
