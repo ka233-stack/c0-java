@@ -118,7 +118,7 @@ public class Tokenizer {
         char ch = it.nextChar();
 
         // 不允许出现单引号'、空白符\r、\n、\t
-        if (ch == '\'' || Character.isWhitespace(ch)) {
+        if (ch == '\'' || ch == '\r' || ch == '\n' || ch == '\t') {
             throw new TokenizeError(ErrorCode.InvalidInput, startPos);
         } else if (ch == '\\') { // 判断转义
             // '\'
