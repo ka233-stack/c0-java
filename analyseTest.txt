@@ -1,8 +1,0 @@
-fn main() -> void {
-    let c: int = 0;
-    let i: int;
-    if c < 10 {
-        i = 0;
-        c = c + 1;
-    }
-}

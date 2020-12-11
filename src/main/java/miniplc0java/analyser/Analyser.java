@@ -68,10 +68,10 @@ public final class Analyser {
     }
 
     private void initTables() {
-        this.funcTable = new HashMap<>(); // 创建函数表
+        this.funcTable = new LinkedHashMap<>(); // 创建函数表
         this.funcTable.put(startFunc, new FunctionEntry(0)); // 函数表添加startFunc
-        this.symbolTable = new HashMap<>(); // 创建符号表
-        this.symbolTable.put(startFunc, new HashMap<>()); // 符号表添加<startFunc : <>>
+        this.symbolTable = new LinkedHashMap<>(); // 创建符号表
+        this.symbolTable.put(startFunc, new LinkedHashMap<>()); // 符号表添加<startFunc : <>>
         // 符号表添加<startFunc: <startFunc :>>
         int symbolNo = this.funcTable.get(startFunc).getNextLocOffset();
         SymbolEntry entry = new SymbolEntry(SymbolType.FUNCNAME, IdentType.VOID, symbolNo);
@@ -139,8 +139,9 @@ public final class Analyser {
     private int addFunc(String funcName, IdentType retType, Pos curPos) throws AnalyzeError {
         // funcName不能重复，也不能和全局变量重复（从全局变量中找
         // 添加到函数表
-        int funcNo = addGlobalSymbol(funcName, SymbolType.FUNCNAME, retType, curPos);
-        this.symbolTable.put(funcName, new HashMap<>());
+        addGlobalSymbol(funcName, SymbolType.FUNCNAME, retType, curPos);
+        int funcNo = getFuncNo(funcName);
+        this.symbolTable.put(funcName, new LinkedHashMap<>());
         // TODO 最后输出_start时，参数个数、局部变量个数、返回值全为0
         // 添加到符号表
         FunctionEntry functionEntry = new FunctionEntry(funcNo);
@@ -148,8 +149,21 @@ public final class Analyser {
         return funcNo;
     }
 
-    private int getFuncNo(String funcName) throws AnalyzeError {
-        return getSymbolOffset(startFunc, funcName);
+    private int getFuncNo(String funcName) {
+        var symbolMap = this.symbolTable.get(startFunc);
+        int count = 0;
+        for (Map.Entry<String, SymbolEntry> entry : symbolMap.entrySet()) {
+            String symbolName = entry.getKey();
+            SymbolEntry symbolEntry = entry.getValue();
+            SymbolType symbolType = symbolEntry.getSymbolType();
+            IdentType valueType = symbolEntry.getValueType();
+            if (symbolType == SymbolType.FUNCNAME) {
+                if (funcName.equals(symbolName))
+                    return count;
+                count++;
+            }
+        }
+        return -1;
     }
 
     private int addGlobalSymbol(String symbolName, SymbolType symbolType, IdentType valueType, Pos curPos)
@@ -180,7 +194,7 @@ public final class Analyser {
     }
 
     private int addLocalSymbol(String funcName, int funcNo, String symbolName, SymbolType symbolType,
-            IdentType valueType, Pos curPos) throws AnalyzeError {
+                               IdentType valueType, Pos curPos) throws AnalyzeError {
         if (symbolType == SymbolType.FUNCNAME) // 局部变量不存函数名
             throw new AnalyzeError(ErrorCode.UnsupportedSymbol, curPos);
         var symbolMap = this.symbolTable.get(funcName);
@@ -585,6 +599,7 @@ public final class Analyser {
     private OperandItem analyseCallExpr(String funcName, int funcNo, Token ident) throws CompileError {
         // call_expr -> IDENT '(' call_param_list? ')'
         String callName = ident.getValueString();
+        int callNo = getFuncNo(callName);
         Pos pos = expect(TokenType.L_PAREN).getEndPos();
         IdentType paramType, retType;
         switch (callName) {
@@ -592,24 +607,28 @@ public final class Analyser {
                 expect(TokenType.R_PAREN);
                 retType = IdentType.INT;
                 // TODO
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_I));
                 return new OperandItem(retType, pos);
             case "getchar":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.INT;
                 // TODO
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_C));
                 return new OperandItem(retType, pos);
             case "getdouble":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.DOUBLE;
                 // TODO
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_F));
                 return new OperandItem(retType, pos);
             case "putln":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.VOID;
                 // TODO
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINTLN));
                 return new OperandItem(retType, pos);
             case "putint":
@@ -619,6 +638,7 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_I));
                 return new OperandItem(retType, pos);
             case "putchar":
@@ -628,6 +648,7 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_C));
                 return new OperandItem(retType, pos);
             case "putstr":
@@ -637,6 +658,7 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_S));
                 return new OperandItem(retType, pos);
             case "putdouble":
@@ -646,12 +668,16 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_F));
                 return new OperandItem(retType, pos);
             default: {
                 retType = getRetType(callName);
                 // call_param_list -> expr (',' expr)*
                 // ε | expr (',' expr)*
                 // 每个参数的类型匹配
+                if (retType != IdentType.VOID)
+                    this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 ArrayList<IdentType> paramsSymbolTypes = getParamsSymbolType(callName);
                 int count = 0;
                 while (!check(TokenType.R_PAREN)) {
@@ -666,7 +692,7 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TooManyOrTooFewArguments, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
-                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.CALLNAME, funcNo));
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.CALLNAME, callNo));
                 return new OperandItem(retType, pos);
             }
         }
@@ -816,13 +842,11 @@ public final class Analyser {
                 analyseBlockStmt(funcName, funcNo);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
-                System.out.println(offset);
             } else if (check(TokenType.IF)) { // if_stmt
                 analyseIfStmt(funcName, funcNo);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
-                System.out.println(br_exit);
-                System.out.println(offset);
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
             }
         }
     }
@@ -886,7 +910,7 @@ public final class Analyser {
         this.binCodeFile.initNewFunc(funcNo, funcName);
         if (isMain) {
             this.binCodeFile.addInstruction(0, createInstruction(Operation.STACKALLOC, 0));
-            this.binCodeFile.addInstruction(0, createInstruction(Operation.CALLNAME, funcNo));
+            this.binCodeFile.addInstruction(0, createInstruction(Operation.CALL, funcNo));
         }
         expect(TokenType.L_PAREN);
         if (nextIf(TokenType.R_PAREN) == null) { // function_param_list?
@@ -904,14 +928,15 @@ public final class Analyser {
         }
         setRetType(funcName, retType, curPos); // 设置函数返回值类型
         analyseBlockStmt(funcName, funcNo);
-
-        Instruction instruction = this.binCodeFile.getInstruction(funcNo, this.binCodeFile.getInsNum(funcNo) - 1);
-        if (instruction.getOpt() != Operation.RET) {
-            if (retType != IdentType.VOID)
-                throw new AnalyzeError(ErrorCode.NeedReturnStatement, peek().getStartPos());
-            else
-                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.RET));
-        }
+        // TODO check return if-return  else-return return
+//        Instruction instruction = this.binCodeFile.getInstruction(funcNo, this.binCodeFile.getInsNum(funcNo) - 1);
+//        if (instruction.getOpt() != Operation.RET) {
+//            if (retType != IdentType.VOID)
+//                throw new AnalyzeError(ErrorCode.NeedReturnStatement, peek().getStartPos());
+//            else
+//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.RET));
+//        }
+        this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.RET));
     }
 
     private void analyseFuncParamList(String funcName, int funcNo) throws CompileError {

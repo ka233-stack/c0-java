@@ -12,11 +12,11 @@ import java.util.Scanner;
 public class App {
 
     public static void main(String[] args) throws IOException, CompileError {
-        Scanner scanner = null;
-        PrintStream output = null;
-        scanner = new Scanner(new File(args[0]));
-        output = new PrintStream(new FileOutputStream(args[1]));
-
+        Scanner scanner = new Scanner(new File(args[0]));
+        PrintStream output = new PrintStream(new FileOutputStream(args[1]));
+        while (scanner.hasNextLine()) {
+            System.out.println(scanner.nextLine());
+        }
         StringIter stringIter = new StringIter(scanner);
         Tokenizer tokenizer = new Tokenizer(stringIter);
         Analyser analyser = new Analyser(tokenizer);

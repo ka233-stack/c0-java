@@ -174,7 +174,7 @@ public class Tokenizer {
         while ((peeked = it.peekChar()) != '\"') {
             // 不允许出现双引号"、空白符\r、\n、\t
             // if (peeked == '\\' || Character.isWhitespace(peeked)){
-            if (Character.isWhitespace(peeked)) {
+            if (peeked == '\r' || peeked == '\n' || peeked == '\t') {
                 throw new TokenizeError(ErrorCode.InvalidInput, startPos);
             } else if (peeked == '\\') { // 判断转义
                 // '\'
@@ -208,7 +208,7 @@ public class Tokenizer {
 
         return new
 
-        Token(TokenType.STRING_LITERAL, sb.toString(), startPos, it.
+                Token(TokenType.STRING_LITERAL, sb.toString(), startPos, it.
 
                 currentPos());
     }
