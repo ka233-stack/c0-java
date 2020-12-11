@@ -38,6 +38,8 @@ public enum ErrorCode {
     UnsupportedTypeCasting, // 不支持的类型转换
     TooManyOrTooFewArguments, // 参数过多或过少
     TypeMismatch, // 类型不匹配
+    NoBreakContext,
+    NoContinueContext,
 
     ReturnValueTypeMismatched, // 返回值类型不匹配
 

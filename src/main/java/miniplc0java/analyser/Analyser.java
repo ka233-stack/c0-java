@@ -715,7 +715,7 @@ public final class Analyser {
     // statements
     // -----------------------------------------------------------------------------------------------------
 
-    private ArrayList<Integer> analyseStmt(String funcName, int funcNo, int brPos, ArrayList<Integer> brBreaks) throws CompileError {
+    private ArrayList<Integer> analyseStmt(String funcName, int funcNo, int brPos, boolean hasWhile, ArrayList<Integer> brBreaks) throws CompileError {
         if (check(TokenType.LET)) {// let_decl_stmt
             analyseLetDeclStmt(funcName, funcNo);
             return brBreaks;
@@ -723,19 +723,23 @@ public final class Analyser {
             analyseConstDeclStmt(funcName, funcNo);
             return brBreaks;
         } else if (check(TokenType.IF)) { // if_stmt
-            return analyseIfStmt(funcName, funcNo, brPos, brBreaks);
+            return analyseIfStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
         } else if (check(TokenType.WHILE)) { // while_stmt
             return analyseWhileStmt(funcName, funcNo, brBreaks);
         } else if (check(TokenType.RETURN)) { // return_stmt
             analyseReturnStmt(funcName, funcNo);
             return brBreaks;
         } else if (check(TokenType.BREAK)) {
+            if (!hasWhile)
+                throw new AnalyzeError(ErrorCode.NoBreakContext, peek().getStartPos());
             return analyseBreakStmt(funcNo, brBreaks);
         } else if (check(TokenType.CONTINUE)) {
+            if (brPos == -1)
+                throw new AnalyzeError(ErrorCode.NoContinueContext, peek().getStartPos());
             analyseContinueStmt(funcNo, brPos);
             return brBreaks;
         } else if (check(TokenType.L_BRACE)) { // block_stmt
-            return analyseBlockStmt(funcName, funcNo, brPos, brBreaks);
+            return analyseBlockStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
         } else if (check(TokenType.SEMICOLON)) { // empty_stmt
             next();// ';'
             return brBreaks;
@@ -838,7 +842,7 @@ public final class Analyser {
         expect(TokenType.SEMICOLON);
     }
 
-    private ArrayList<Integer> analyseIfStmt(String funcName, int funcNo, int brPos, ArrayList<Integer> brBreaks) throws CompileError {
+    private ArrayList<Integer> analyseIfStmt(String funcName, int funcNo, int brPos, boolean hasWhile, ArrayList<Integer> brBreaks) throws CompileError {
         // TODO check return
         // 'if' expr block_stmt ('else' (block_stmt | if_stmt))?
         expect(TokenType.IF);
@@ -848,18 +852,18 @@ public final class Analyser {
         if (type == IdentType.VOID)
             throw new AnalyzeError(ErrorCode.UnsupportedType, pos);
         int br_false = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR_FALSE, 0));
-        brBreaks = analyseBlockStmt(funcName, funcNo, brPos, brBreaks);
+        brBreaks = analyseBlockStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
         int br_exit = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
         this.binCodeFile.getInstruction(funcNo, br_false).setParam(br_exit - br_false);
         // ('else' (block_stmt | if_stmt))?
         if (nextIf(TokenType.ELSE) != null) {
             if (check(TokenType.L_BRACE)) { // block_stmt
-                brBreaks = analyseBlockStmt(funcName, funcNo, brPos, brBreaks);
+                brBreaks = analyseBlockStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
             } else if (check(TokenType.IF)) { // if_stmt
-                brBreaks = analyseIfStmt(funcName, funcNo, brPos, brBreaks);
+                brBreaks = analyseIfStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
@@ -876,7 +880,7 @@ public final class Analyser {
         int startOffset = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
         analyseExprOPG(funcName, funcNo); // expr
         int br_false = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR_FALSE, 0));
-        brBreaks = analyseBlockStmt(funcName, funcNo, startOffset, brBreaks); // block_stmt
+        brBreaks = analyseBlockStmt(funcName, funcNo, startOffset, true, brBreaks); // block_stmt
         int curOffset = this.binCodeFile.getInsNum(funcNo);
         int br_loop = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, startOffset - curOffset));
         this.binCodeFile.getInstruction(funcNo, br_false).setParam(br_loop - br_false);
@@ -908,13 +912,12 @@ public final class Analyser {
         this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.RET));
     }
 
-    private ArrayList<Integer> analyseBlockStmt(String funcName, int funcNo, int brPos, ArrayList<Integer> brBreaks) throws CompileError { // block_stmt -> '{' stmt* '}'
-        ArrayList<Integer> res = new ArrayList<>();
+    private ArrayList<Integer> analyseBlockStmt(String funcName, int funcNo, int brPos, boolean hasWhile, ArrayList<Integer> brBreaks) throws CompileError { // block_stmt -> '{' stmt* '}'
         expect(TokenType.L_BRACE);
         while (nextIf(TokenType.R_BRACE) == null) {
-            res = analyseStmt(funcName, funcNo, brPos, brBreaks);
+            brBreaks = analyseStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
         }
-        return res;
+        return brBreaks;
     }
 
     // function
@@ -956,7 +959,7 @@ public final class Analyser {
             this.binCodeFile.setFuncRet(funcNo);
             setRetType(funcName, retType, curPos); // 设置函数返回值类型
         }
-        analyseBlockStmt(funcName, funcNo, -1, new ArrayList<>());
+        analyseBlockStmt(funcName, funcNo, -1, false, new ArrayList<>());
         // TODO check return if-return  else-return return
 //        Instruction instruction = this.binCodeFile.getInstruction(funcNo, this.binCodeFile.getInsNum(funcNo) - 1);
 //        if (instruction.getOpt() != Operation.RET) {
