@@ -490,8 +490,10 @@ public final class Analyser {
                             this.binCodeFile.addInstruction(funcNo, instruction);
                         }
                     } else {
-                        if (type_l != type_r)
-                            throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
+                        if (type_l != type_r) { // check int char
+                            if ((type_l != IdentType.INT && type_l != IdentType.CHAR) || (type_r != IdentType.INT && type_r != IdentType.CHAR))
+                                throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
+                        }
                         switch (op) {
                             case MUL:
                                 if (type_l == IdentType.INT) {
