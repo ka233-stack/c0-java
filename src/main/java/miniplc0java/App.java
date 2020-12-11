@@ -20,9 +20,7 @@ public class App {
         StringIter stringIter = new StringIter(scanner);
         Tokenizer tokenizer = new Tokenizer(stringIter);
         Analyser analyser = new Analyser(tokenizer);
-        O0 binCodeFile = null;
-
-        binCodeFile = analyser.analyse();
+        O0 binCodeFile = analyser.analyse();
 
         binCodeFile.writeFile(output);
         output.close();
