@@ -137,7 +137,8 @@ public final class Analyser {
     }
 
     private void addBlock(String blockName) {
-        this.symbolTable.put(blockName, new LinkedHashMap<>());
+        if (!this.symbolTable.containsKey(blockName))
+            this.symbolTable.put(blockName, new LinkedHashMap<>());
     }
 
     private int addFunc(String funcName, IdentType retType, Pos curPos) throws AnalyzeError {
@@ -401,7 +402,19 @@ public final class Analyser {
             if (check(TokenType.L_PAREN)) { // call_expr -> IDENT '(' call_param_list? ')'
                 return analyseCallExpr(funcName, funcNo, ident);
             } else if (check(TokenType.ASSIGN)) { // assign_expr -> IDENT '=' expr
-                SymbolEntry entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                SymbolEntry entry = null;
+                while (true) {
+                    if (funcName.indexOf("#") == -1) {
+                        entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                        break;
+                    }
+                    funcName = new StringBuffer(funcName).reverse().toString();
+                    funcName = funcName.replaceFirst("[A-Z]*#", "");
+                    funcName = new StringBuilder(funcName).reverse().toString();
+                    entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                    if (entry != null)  // 存在
+                        break;
+                }
                 if (entry == null) { // 不存在
                     entry = getSymbolEntry(startFunc, symbolName); // 调用全局变量
                     isGlobal = true;
@@ -438,7 +451,7 @@ public final class Analyser {
                         break;
                     }
                     funcName = new StringBuffer(funcName).reverse().toString();
-                    funcName.replaceFirst("^#[A-Z]+$", "");
+                    funcName = funcName.replaceFirst("[A-Z]*#", "");
                     funcName = new StringBuilder(funcName).reverse().toString();
                     entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
                     if (entry != null)  // 存在
@@ -907,15 +920,19 @@ public final class Analyser {
         return new ArrayList<>();
     }
 
-    private void analyseReturnStmt(String funcName, int funcNo) throws CompileError {
+    private void analyseReturnStmt(String blockName, int funcNo) throws CompileError {
         Pos curPos = expect(TokenType.RETURN).getStartPos();
+        String funcName = blockName;
+        while (funcName.indexOf("#") != -1) {
+            funcName = funcName.replaceAll("#[A-Z]*", "");
+        }
         IdentType funcRetType = getRetType(funcName); // 从符号表中获取函数返回值类型
         // 'return' expr? ';'
         if (nextIf(TokenType.SEMICOLON) == null) {
             if (funcRetType == IdentType.VOID) // 如果函数声明的返回值是 void,return 语句不能携带返回值
                 throw new AnalyzeError(ErrorCode.ReturnValueTypeMismatched, peek().getStartPos());
             this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.ARGA, 0));
-            IdentType valueType = analyseExprOPG(funcName, funcNo).getType();
+            IdentType valueType = analyseExprOPG(blockName, funcNo).getType();
             expect(TokenType.SEMICOLON);
             if (valueType != funcRetType) {
                 if ((valueType != IdentType.INT && valueType != IdentType.CHAR) || (funcRetType != IdentType.INT && funcRetType != IdentType.CHAR))
