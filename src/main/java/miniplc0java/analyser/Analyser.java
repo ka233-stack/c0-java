@@ -857,8 +857,10 @@ public final class Analyser {
             this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.ARGA, 0));
             IdentType valueType = analyseExprOPG(funcName, funcNo).getType();
             expect(TokenType.SEMICOLON);
-            if (valueType != funcRetType)
-                throw new AnalyzeError(ErrorCode.ReturnValueTypeMismatched, peek().getStartPos());
+            if (valueType != funcRetType){
+                if ((valueType != IdentType.INT && valueType != IdentType.CHAR) || (funcRetType != IdentType.INT && funcRetType != IdentType.CHAR))
+                    throw new AnalyzeError(ErrorCode.ReturnValueTypeMismatched, peek().getStartPos());
+            }
             this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STORE_64));
         }
         this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.RET));
