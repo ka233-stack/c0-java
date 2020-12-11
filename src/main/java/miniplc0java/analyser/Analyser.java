@@ -127,7 +127,6 @@ public final class Analyser {
         if (!symbolMap.containsKey(symbolName))
             return null;
         return symbolMap.get(symbolName);
-
     }
 
     private FunctionEntry getFuncEntry(String funcName, Pos curPos) throws AnalyzeError {
@@ -135,6 +134,10 @@ public final class Analyser {
         if (symbolEntry == null) // 函数不存在
             throw new AnalyzeError(ErrorCode.FunctionNotExist, curPos);
         return this.funcTable.get(funcName);
+    }
+
+    private void addBlock(String blockName) {
+        this.symbolTable.put(blockName, new LinkedHashMap<>());
     }
 
     private int addFunc(String funcName, IdentType retType, Pos curPos) throws AnalyzeError {
@@ -194,11 +197,12 @@ public final class Analyser {
         return offset;
     }
 
-    private int addLocalSymbol(String funcName, int funcNo, String symbolName, SymbolType symbolType,
+    private int addLocalSymbol(String blockName, int funcNo, String symbolName, SymbolType symbolType,
                                IdentType valueType, Pos curPos) throws AnalyzeError {
+        String funcName = blockName.split("#")[0];
         if (symbolType == SymbolType.FUNCNAME) // 局部变量不存函数名
             throw new AnalyzeError(ErrorCode.UnsupportedSymbol, curPos);
-        var symbolMap = this.symbolTable.get(funcName);
+        var symbolMap = this.symbolTable.get(blockName);
         if (symbolMap == null) // 若函数不存在，报错
             throw new AnalyzeError(ErrorCode.FunctionNotExist, curPos);
         if (symbolMap.containsKey(symbolName))// 符号存在，则报错重复声明
@@ -427,7 +431,19 @@ public final class Analyser {
                 this.binCodeFile.addInstruction(funcNo, instruction);
                 return new OperandItem(IdentType.VOID, pos);
             } else { // ident_expr -> IDENT
-                SymbolEntry entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                SymbolEntry entry = null;
+                while (true) {
+                    if (funcName.indexOf("#") == -1) {
+                        entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                        break;
+                    }
+                    funcName = new StringBuffer(funcName).reverse().toString();
+                    funcName.replaceFirst("^#[A-Z]+$", "");
+                    funcName = new StringBuilder(funcName).reverse().toString();
+                    entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                    if (entry != null)  // 存在
+                        break;
+                }
                 if (entry == null) { // 不存在
                     entry = getSymbolEntry(startFunc, symbolName); // 调用全局变量
                     isGlobal = true;
@@ -739,7 +755,7 @@ public final class Analyser {
             analyseContinueStmt(funcNo, brPos);
             return brBreaks;
         } else if (check(TokenType.L_BRACE)) { // block_stmt
-            return analyseBlockStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
+            return analyseBlockStmt(funcName + "#B", funcNo, brPos, hasWhile, brBreaks);
         } else if (check(TokenType.SEMICOLON)) { // empty_stmt
             next();// ';'
             return brBreaks;
@@ -852,18 +868,18 @@ public final class Analyser {
         if (type == IdentType.VOID)
             throw new AnalyzeError(ErrorCode.UnsupportedType, pos);
         int br_false = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR_FALSE, 0));
-        brBreaks = analyseBlockStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
+        brBreaks = analyseBlockStmt(funcName + "#IF", funcNo, brPos, hasWhile, brBreaks);
         int br_exit = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
         this.binCodeFile.getInstruction(funcNo, br_false).setParam(br_exit - br_false);
         // ('else' (block_stmt | if_stmt))?
         if (nextIf(TokenType.ELSE) != null) {
             if (check(TokenType.L_BRACE)) { // block_stmt
-                brBreaks = analyseBlockStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
+                brBreaks = analyseBlockStmt(funcName + "#ELSE", funcNo, brPos, hasWhile, brBreaks);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
             } else if (check(TokenType.IF)) { // if_stmt
-                brBreaks = analyseIfStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
+                brBreaks = analyseIfStmt(funcName + "#ELSEIF", funcNo, brPos, hasWhile, brBreaks);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
@@ -880,7 +896,7 @@ public final class Analyser {
         int startOffset = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
         analyseExprOPG(funcName, funcNo); // expr
         int br_false = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR_FALSE, 0));
-        brBreaks = analyseBlockStmt(funcName, funcNo, startOffset, true, brBreaks); // block_stmt
+        brBreaks = analyseBlockStmt(funcName + "#W", funcNo, startOffset, true, brBreaks); // block_stmt
         int curOffset = this.binCodeFile.getInsNum(funcNo);
         int br_loop = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, startOffset - curOffset));
         this.binCodeFile.getInstruction(funcNo, br_false).setParam(br_loop - br_false);
@@ -913,6 +929,7 @@ public final class Analyser {
     }
 
     private ArrayList<Integer> analyseBlockStmt(String funcName, int funcNo, int brPos, boolean hasWhile, ArrayList<Integer> brBreaks) throws CompileError { // block_stmt -> '{' stmt* '}'
+        addBlock(funcName);
         expect(TokenType.L_BRACE);
         while (nextIf(TokenType.R_BRACE) == null) {
             brBreaks = analyseStmt(funcName, funcNo, brPos, hasWhile, brBreaks);
