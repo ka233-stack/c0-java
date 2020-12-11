@@ -411,7 +411,6 @@ public final class Analyser {
                     this.binCodeFile.addInstruction(funcNo, instruction);
                 }
                 next(); // '='
-                entry.setSymbolType(SymbolType.LETINIT);
                 OperandItem expr = analyseExprOPG(funcName, funcNo);
                 if (expr.getType() != valueType)
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
@@ -604,25 +603,21 @@ public final class Analyser {
             case "getint":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.INT;
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_I));
                 return new OperandItem(retType, pos);
             case "getchar":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.INT;
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_C));
                 return new OperandItem(retType, pos);
             case "getdouble":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.DOUBLE;
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_F));
                 return new OperandItem(retType, pos);
             case "putln":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.VOID;
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINTLN));
                 return new OperandItem(retType, pos);
             case "putint":
@@ -631,7 +626,6 @@ public final class Analyser {
                 if (paramType != IdentType.INT)
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_I));
                 return new OperandItem(retType, pos);
             case "putchar":
@@ -640,7 +634,6 @@ public final class Analyser {
                 if (paramType != IdentType.INT && paramType != IdentType.CHAR)
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_C));
                 return new OperandItem(retType, pos);
             case "putstr":
@@ -649,7 +642,6 @@ public final class Analyser {
                 if (paramType != IdentType.INT && paramType != IdentType.STRING)
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_S));
                 return new OperandItem(retType, pos);
             case "putdouble":
@@ -658,27 +650,26 @@ public final class Analyser {
                 if (paramType != IdentType.DOUBLE)
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
-                // TODO
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_F));
                 return new OperandItem(retType, pos);
             default: {
                 retType = getRetType(callName);
                 // call_param_list -> expr (',' expr)*
                 // ε | expr (',' expr)*
-                // 每个参数的类型匹配
                 if (retType != IdentType.VOID)
                     this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
+                // 每个参数的类型匹配
                 ArrayList<IdentType> paramsSymbolTypes = getParamsSymbolType(callName);
-                int count = 0;
+                int paramCount = 0;
                 while (!check(TokenType.R_PAREN)) {
                     paramType = analyseExprOPG(funcName, funcNo).getType();
-                    if (paramType != paramsSymbolTypes.get(count))
+                    if (paramType != paramsSymbolTypes.get(paramCount))
                         throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
-                    count++;
+                    paramCount++;
                     if (nextIf(TokenType.COMMA) == null)
                         break;
                 }
-                if (count != paramsSymbolTypes.size())
+                if (paramCount != paramsSymbolTypes.size())
                     throw new AnalyzeError(ErrorCode.TooManyOrTooFewArguments, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
