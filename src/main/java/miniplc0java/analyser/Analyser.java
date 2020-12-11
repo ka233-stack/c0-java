@@ -720,15 +720,17 @@ public final class Analyser {
             analyseLetDeclStmt(funcName, funcNo);
         } else if (check(TokenType.CONST)) { // const_decl_stmt
             analyseConstDeclStmt(funcName, funcNo);
-        } else if (check(TokenType.IF)) {
-            // if_stmt
+        } else if (check(TokenType.IF)) { // if_stmt
             analyseIfStmt(funcName, funcNo);
-        } else if (check(TokenType.WHILE)) {// while_stmt
+        } else if (check(TokenType.WHILE)) { // while_stmt
             analyseWhileStmt(funcName, funcNo);
         } else if (check(TokenType.RETURN)) { // return_stmt
             analyseReturnStmt(funcName, funcNo);
+        } else if (check(TokenType.BREAK)) {
+            analyseBreakStmt(funcName, funcNo);
+        } else if (check(TokenType.CONTINUE)) {
+            analyseContinueStmt(funcName, funcNo);
         } else if (check(TokenType.L_BRACE)) { // block_stmt
-            // block_stmt
             analyseBlockStmt(funcName, funcNo);
         } else if (check(TokenType.SEMICOLON)) { // empty_stmt
             next();// ';'
@@ -737,6 +739,16 @@ public final class Analyser {
             // ';'
             expect(TokenType.SEMICOLON);
         }
+    }
+
+    private void analyseBreakStmt(String funcName, int funcNo) throws CompileError {
+        expect(TokenType.BREAK);
+        expect(TokenType.SEMICOLON);
+    }
+
+    private void analyseContinueStmt(String funcName, int funcNo) throws CompileError {
+        expect(TokenType.CONTINUE);
+        expect(TokenType.SEMICOLON);
     }
 
     private void analyseLetDeclStmt(String funcName, int funcNo) throws CompileError {
@@ -853,6 +865,7 @@ public final class Analyser {
         int curOffset = this.binCodeFile.getInsNum(funcNo);
         int br_loop = this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, startOffset - curOffset));
         this.binCodeFile.getInstruction(funcNo, br_false).setParam(br_loop - br_false);
+        this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
     }
 
     private void analyseReturnStmt(String funcName, int funcNo) throws CompileError {
