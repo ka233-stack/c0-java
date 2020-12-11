@@ -58,7 +58,7 @@ public class Tokenizer {
         }
         // 解析字符串
         str = sb.toString();
-        if (isDouble && str.matches("^\\d[.]\\d+([eE][+-]?\\d+)?$")) { // DOUBLE
+        if (isDouble && str.matches("^\\d+[.]\\d+([eE][+-]?\\d+)?$")) { // DOUBLE
             try {
                 Double value = Double.parseDouble(str);
                 return new Token(TokenType.DOUBLE_LITERAL, value, startPos, startPos);
