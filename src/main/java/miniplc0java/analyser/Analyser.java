@@ -402,18 +402,17 @@ public final class Analyser {
             if (check(TokenType.L_PAREN)) { // call_expr -> IDENT '(' call_param_list? ')'
                 return analyseCallExpr(funcName, funcNo, ident);
             } else if (check(TokenType.ASSIGN)) { // assign_expr -> IDENT '=' expr
-                SymbolEntry entry = null;
-                while (true) {
-                    if (funcName.indexOf("#") == -1) {
-                        entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                String blockName = funcName;
+                SymbolEntry entry = getSymbolEntry(blockName, symbolName);
+                while (entry == null) {
+                    if (blockName.indexOf("#") == -1) {
+                        entry = getSymbolEntry(blockName, symbolName);
                         break;
                     }
-                    funcName = new StringBuffer(funcName).reverse().toString();
-                    funcName = funcName.replaceFirst("[A-Z]*#", "");
-                    funcName = new StringBuilder(funcName).reverse().toString();
-                    entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
-                    if (entry != null)  // 存在
-                        break;
+                    blockName = new StringBuffer(blockName).reverse().toString();
+                    blockName = blockName.replaceFirst("[A-Z]*#", "");
+                    blockName = new StringBuilder(blockName).reverse().toString();
+                    entry = getSymbolEntry(blockName, symbolName);// 调用局部变量、调用参数
                 }
                 if (entry == null) { // 不存在
                     entry = getSymbolEntry(startFunc, symbolName); // 调用全局变量
@@ -444,18 +443,17 @@ public final class Analyser {
                 this.binCodeFile.addInstruction(funcNo, instruction);
                 return new OperandItem(IdentType.VOID, pos);
             } else { // ident_expr -> IDENT
-                SymbolEntry entry = null;
-                while (true) {
-                    if (funcName.indexOf("#") == -1) {
-                        entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
+                String blockName = funcName;
+                SymbolEntry entry = getSymbolEntry(blockName, symbolName);
+                while (entry == null) {
+                    if (blockName.indexOf("#") == -1) {
+                        entry = getSymbolEntry(blockName, symbolName);
                         break;
                     }
-                    funcName = new StringBuffer(funcName).reverse().toString();
-                    funcName = funcName.replaceFirst("[A-Z]*#", "");
-                    funcName = new StringBuilder(funcName).reverse().toString();
-                    entry = getSymbolEntry(funcName, symbolName);// 调用局部变量、调用参数
-                    if (entry != null)  // 存在
-                        break;
+                    blockName = new StringBuffer(blockName).reverse().toString();
+                    blockName = blockName.replaceFirst("[A-Z]*#", "");
+                    blockName = new StringBuilder(blockName).reverse().toString();
+                    entry = getSymbolEntry(blockName, symbolName);// 调用局部变量、调用参数
                 }
                 if (entry == null) { // 不存在
                     entry = getSymbolEntry(startFunc, symbolName); // 调用全局变量
