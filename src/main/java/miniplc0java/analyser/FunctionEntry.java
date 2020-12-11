@@ -8,7 +8,7 @@ public class FunctionEntry {
     public FunctionEntry(int funcNo) {
         this.funcNo = funcNo;
         this.nextLocOffset = 0;
-        this.nextParamOffset = 1;
+        this.nextParamOffset = 0;
     }
 
     public int getFuncNumOffset() {

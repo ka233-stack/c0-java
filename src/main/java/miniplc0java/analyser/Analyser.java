@@ -258,6 +258,14 @@ public final class Analyser {
 
     private void setRetType(String funcName, IdentType type, Pos pos) throws AnalyzeError {
         setSymbolValueType(startFunc, funcName, type, pos);
+        var map = this.symbolTable.get(funcName);
+        for (Map.Entry<String, SymbolEntry> entry : map.entrySet()) {
+            SymbolEntry symbolEntry = entry.getValue();
+            SymbolType symbolType = symbolEntry.getSymbolType();
+            if (symbolType == SymbolType.CONSTPARAM || symbolType == SymbolType.LETPARAM) {
+                symbolEntry.offset++;
+            }
+        }
     }
 
     private int getSymbolOffset(String funcName, String symbolName) throws AnalyzeError {
@@ -911,8 +919,8 @@ public final class Analyser {
             // if (isMain)
             // throw new AnalyzeError(ErrorCode.MainFunctionOnlyReturnVoid, curPos);
             this.binCodeFile.setFuncRet(funcNo);
+            setRetType(funcName, retType, curPos); // 设置函数返回值类型
         }
-        setRetType(funcName, retType, curPos); // 设置函数返回值类型
         analyseBlockStmt(funcName, funcNo);
         // TODO check return if-return  else-return return
 //        Instruction instruction = this.binCodeFile.getInstruction(funcNo, this.binCodeFile.getInsNum(funcNo) - 1);

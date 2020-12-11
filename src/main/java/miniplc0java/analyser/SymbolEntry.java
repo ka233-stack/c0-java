@@ -38,7 +38,9 @@ public class SymbolEntry {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.valueType);
+        sb.append(symbolType).append(" ");
+        sb.append(this.valueType).append(" ");
+        sb.append(offset);
         return sb.toString();
     }
 }
