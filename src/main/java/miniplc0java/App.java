@@ -14,14 +14,10 @@ public class App {
     public static void main(String[] args) throws IOException, CompileError {
         Scanner scanner = new Scanner(new File(args[0]));
         PrintStream output = new PrintStream(new FileOutputStream(args[1]));
-        while (scanner.hasNextLine()) {
-            System.out.println(scanner.nextLine());
-        }
         StringIter stringIter = new StringIter(scanner);
         Tokenizer tokenizer = new Tokenizer(stringIter);
         Analyser analyser = new Analyser(tokenizer);
         O0 binCodeFile = analyser.analyse();
-
         binCodeFile.writeFile(output);
         output.close();
 
