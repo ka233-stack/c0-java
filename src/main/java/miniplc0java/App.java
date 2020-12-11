@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class App {
 
-    public static void main(String[] args) throws FileNotFoundException, CompileError {
+    public static void main(String[] args) throws IOException, CompileError {
         Scanner scanner = null;
         PrintStream output = null;
         scanner = new Scanner(new File(args[0]));
@@ -24,17 +24,8 @@ public class App {
 
         binCodeFile = analyser.analyse();
 
-        String str;
-        if (binCodeFile != null) {
-            str = binCodeFile.toHexCode();
-            int size = str.length();
-            for (int i = 0; i < size; i += 2) {
-                int x = Integer.parseInt("" + str.charAt(i) + str.charAt(i + 1), 16);
-                output.write(x);
-            }
-        }
-        if (output != null)
-            output.close();
+        binCodeFile.writeFile(output);
+        output.close();
 
     }
 }

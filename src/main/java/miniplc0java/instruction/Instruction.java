@@ -3,13 +3,13 @@ package miniplc0java.instruction;
 import miniplc0java.error.ErrorCode;
 import miniplc0java.error.InstructionError;
 
+import static miniplc0java.util.StringUtils.u32Bytes;
+import static miniplc0java.util.StringUtils.u64Bytes;
+
 public class Instruction {
-    private Operation opt;
+    public Operation opt;
     public int length; // 参数长度 u32 = 32
     public long param;
-
-    private Instruction() {
-    }
 
     private Instruction(Operation opt) {
         this.opt = opt;
@@ -76,6 +76,16 @@ public class Instruction {
             default:
                 throw new InstructionError(ErrorCode.UnsupportedInstructionType);
         }
+    }
+
+    public byte[] getParamByte() {
+        byte[] bytes;
+        if (this.length == 32) {
+            bytes = u32Bytes((int) this.param);
+        } else {
+            bytes = u64Bytes(this.param);
+        }
+        return bytes;
     }
 
     public static Instruction createInstruction(Operation opt, long param) throws InstructionError {

@@ -10,79 +10,15 @@ import java.util.Scanner;
 public class StringIterTest {
     Scanner scanner;
 
-    {
+
+    @Test
+    public void nextPosTest() {
         try {
             scanner = new Scanner(new File("test1.txt"));
         } catch (FileNotFoundException e) {
         }
-    }
-
-    StringIter stringIter = new StringIter(scanner);
-
-    @Test
-    public void nextPosTest() {
+        StringIter stringIter = new StringIter(scanner);
         stringIter.readAll();
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
-        System.out.println(stringIter.nextPos());
-        System.out.println(stringIter.nextChar());
         System.out.println(stringIter.nextPos());
         System.out.println(stringIter.nextChar());
     }

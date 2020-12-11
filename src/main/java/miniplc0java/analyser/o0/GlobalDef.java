@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class GlobalDef {
     // 是否为常量？非零值视为真
-    private byte is_const;// u8
+    public byte is_const;// u8
     // 值
-    private ArrayList<Byte> value;// u8
+    public ArrayList<Byte> value;// u8
 
     public GlobalDef(byte is_const, ArrayList<Byte> value) {
         this.is_const = is_const;

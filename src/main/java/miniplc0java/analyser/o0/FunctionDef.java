@@ -8,7 +8,7 @@ public class FunctionDef {
     // 函数名称在全局变量中的位置
     public int name; // u32,
     // 返回值占据的 slot 数
-    public int return_slots; // u32,
+    public int ret_slots; // u32,
     // 参数占据的 slot 数
     public int param_slots; // u32,
     // 局部变量占据的 slot 数
@@ -16,9 +16,9 @@ public class FunctionDef {
     // 函数体
     public ArrayList<Instruction> body;
 
-    public FunctionDef(int name, int return_slots, int param_slots, int loc_slots) {
+    public FunctionDef(int name, int ret_slots, int param_slots, int loc_slots) {
         this.name = name;
-        this.return_slots = return_slots;
+        this.ret_slots = ret_slots;
         this.param_slots = param_slots;
         this.loc_slots = loc_slots;
         this.body = new ArrayList<>();
@@ -41,7 +41,7 @@ public class FunctionDef {
     }
 
     public int getReturn_slots() {
-        return return_slots;
+        return ret_slots;
     }
 
     public int addInstruction(Instruction instruction) {
@@ -65,7 +65,7 @@ public class FunctionDef {
         this.param_slots++;
     }
 
-    public void setReturn_slots(int return_slots) {
-        this.return_slots = return_slots;
+    public void setRet_slots(int ret_slots) {
+        this.ret_slots = ret_slots;
     }
 }
