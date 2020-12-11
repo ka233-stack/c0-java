@@ -215,8 +215,6 @@ public final class Analyser {
         return offset;
     }
 
-    // private void addParam(String funcName,String symbolName,IdentType symbolType)
-
     private void setSymbolSymbolType(String funcName, String symbolName, SymbolType type) throws AnalyzeError {
         getSymbolEntry(funcName, symbolName).setSymbolType(type);
     }
