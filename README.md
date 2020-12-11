@@ -142,25 +142,45 @@ Br(0)
 
 
 ```
-let i: int = 2;
-
-fn foo() -> int {
-    let i: int = 1;
-    return i;
+static: 0 0 0 0 0 0 0 0
+static: 0 0 0 0 0 0 0 0
+static: 0 0 0 0 0 0 0 0
+static: 5f 73 74 61 72 74
+static: 61 64 64
+static: 6d 61 69 6e
+fn [3] 0 0 -> 0 {
+    globa 0
+    push 1
+    store.64
+    globa 1
+    push 2
+    store.64
+    globa 2
+    push 0
+    store.64
+    call 2
 }
-
-fn main() -> void {
+fn [4] 0 2 -> 1 {
+    arga 0
+    arga 1
+    load.64
+    arga 2
+    load.64
+    add.i
+    store.64
+    ret
+    ret
 }
-
-
-_startFunc
-	_startFunc
-	i
-	"foo"
-	foo
-	main
-main
-	
-
+fn [5] 0 0 -> 0 {
+    globa 2
+    stackalloc 1
+    globa 0
+    load.64
+    globa 1
+    load.64
+    call 1
+    store.64
+    ret
+}
 ```
 

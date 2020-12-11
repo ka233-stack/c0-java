@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class FunctionDef {
     // 函数名称在全局变量中的位置
-    public int name; // u32,
+    public int funcOffset; // u32,
     // 返回值占据的 slot 数
     public int ret_slots; // u32,
     // 参数占据的 slot 数
@@ -16,8 +16,8 @@ public class FunctionDef {
     // 函数体
     public ArrayList<Instruction> body;
 
-    public FunctionDef(int name, int ret_slots, int param_slots, int loc_slots) {
-        this.name = name;
+    public FunctionDef(int funcOffset, int ret_slots, int param_slots, int loc_slots) {
+        this.funcOffset = funcOffset;
         this.ret_slots = ret_slots;
         this.param_slots = param_slots;
         this.loc_slots = loc_slots;
@@ -29,7 +29,7 @@ public class FunctionDef {
     }
 
     public int getName() {
-        return name;
+        return funcOffset;
     }
 
     public int getLoc_slots() {

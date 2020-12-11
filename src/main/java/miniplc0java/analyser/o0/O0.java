@@ -26,6 +26,39 @@ public class O0 {
     }
 
 
+    public void addGlobal(GlobalDef global) {
+        this.globals.add(global);
+    }
+
+
+    public void initNewFunc(int funcOffset, String funcName) {
+        this.functions.add(new FunctionDef(funcOffset, 0, 0, 0));
+    }
+
+    public int addInstruction(int funcNo, Instruction instruction) {
+        return this.functions.get(funcNo).addInstruction(instruction);
+    }
+
+    public Instruction getInstruction(int funcNo, int insNo) {
+        return this.functions.get(funcNo).getInstruction(insNo);
+    }
+
+    public int getInsNum(int funcNo) {
+        return this.functions.get(funcNo).getInsNum();
+    }
+
+    public void addFuncParamNum(int funcNo) {
+        this.functions.get(funcNo).addParamNum();
+    }
+
+    public void setFuncRet(int funcNo) {
+        this.functions.get(funcNo).setRet_slots(1);
+    }
+
+    public void addFuncLocNum(int funcNo) {
+        this.functions.get(funcNo).addLocVarNum();
+    }
+
     public void writeFile(PrintStream output) throws IOException {
         output.write(magic); // magic
         output.write(version); // version
@@ -39,7 +72,7 @@ public class O0 {
         }
         output.write(u32Bytes(this.functions.size())); // functions.count
         for (FunctionDef functionDef : this.functions) {
-            output.write(u32Bytes(functionDef.name)); // name
+            output.write(u32Bytes(functionDef.funcOffset)); // name
             output.write(u32Bytes(functionDef.ret_slots)); // ret_slots
             output.write(u32Bytes(functionDef.param_slots)); // param_slots
             output.write(u32Bytes(functionDef.loc_slots)); // loc_slots
@@ -72,7 +105,7 @@ public class O0 {
         sb.append(bytesHexStr(u32Bytes(this.functions.size())));
         sb.append("// functions.count\n");
         for (FunctionDef functionDef : this.functions) {
-            sb.append(bytesHexStr(u32Bytes(functionDef.name)));
+            sb.append(bytesHexStr(u32Bytes(functionDef.funcOffset)));
             sb.append("// name\n");
             sb.append(bytesHexStr(u32Bytes(functionDef.ret_slots)));
             sb.append("// ret_slots\n");
@@ -95,43 +128,6 @@ public class O0 {
         sb.append("// finish");
         return sb.toString();
     }
-
-    public void addGlobal(GlobalDef global) {
-        this.globals.add(global);
-    }
-
-    public void addFunction(FunctionDef function) {
-        this.functions.add(function);
-    }
-
-    public void initNewFunc(int funcNo, String funcName) {
-        this.functions.add(new FunctionDef(funcNo, 0, 0, 0));
-    }
-
-    public int addInstruction(int funcNo, Instruction instruction) {
-        return this.functions.get(funcNo).addInstruction(instruction);
-    }
-
-    public Instruction getInstruction(int funcNo, int no) {
-        return this.functions.get(funcNo).getInstruction(no);
-    }
-
-    public int getInsNum(int funcNo) {
-        return this.functions.get(funcNo).getInsNum();
-    }
-
-    public void addFuncParamNum(int funcNo) {
-        this.functions.get(funcNo).addParamNum();
-    }
-
-    public void setFuncRet(int funcNo) {
-        this.functions.get(funcNo).setRet_slots(1);
-    }
-
-    public void addFuncLocNum(int funcNo) {
-        this.functions.get(funcNo).addLocVarNum();
-    }
-
 
     @Override
     public String toString() {

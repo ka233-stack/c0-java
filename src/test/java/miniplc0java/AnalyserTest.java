@@ -16,9 +16,6 @@ public class AnalyserTest {
     @Test
     public void analyserTest() throws FileNotFoundException, CompileError {
         Scanner scanner = new Scanner(new File("input.txt"));
-//        while (scanner.hasNextLine()) {
-//            System.out.println(scanner.nextLine());
-//        }
         StringIter stringIter = new StringIter(scanner);
         Tokenizer tokenizer = new Tokenizer(stringIter);
         // analyze
@@ -27,7 +24,8 @@ public class AnalyserTest {
 
         System.out.println("\n");
         System.out.println(binCodeFile.toString());
-//        System.out.println(binCodeFile.printString());
+        System.out.println("##########################################\n");
+        System.out.println(binCodeFile.printString());
         System.out.println("##########################################\n");
         System.out.println(analyzer.getSymbolTable());
     }
@@ -46,8 +44,9 @@ public class AnalyserTest {
         O0 binCodeFile = null;
         binCodeFile = analyzer.analyse();
         System.out.println("\n");
-         System.out.println(binCodeFile.toString());
-//        System.out.println(binCodeFile.printString());
+        System.out.println(binCodeFile.toString());
+        System.out.println("##########################################\n");
+        System.out.println(binCodeFile.printString());
         try {
             binCodeFile.writeFile(output);
         } catch (IOException e) {

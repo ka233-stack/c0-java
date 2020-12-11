@@ -887,7 +887,7 @@ public final class Analyser {
         IdentType retType;
         boolean isMain;
         Pos curPos;
-        int funcNo;
+        int funcNo, funcOffset;
         // 'fn' IDENT '(' function_param_list? ')' '->' ty block_stmt
         expect(TokenType.FN);
         token = expect(TokenType.IDENT);
@@ -897,9 +897,9 @@ public final class Analyser {
         funcNo = addFunc(funcName, IdentType.VOID, curPos); // 添加函数到符号表和函数表
         if (funcNo == -1)
             throw new AnalyzeError(ErrorCode.NotDeclared, curPos);
-        this.binCodeFile.initNewFunc(funcNo, funcName);
+        funcOffset = getSymbolOffset(startFunc, funcName);
+        this.binCodeFile.initNewFunc(funcOffset, funcName);
         if (isMain) {
-            this.binCodeFile.addInstruction(0, createInstruction(Operation.STACKALLOC, 0));
             this.binCodeFile.addInstruction(0, createInstruction(Operation.CALL, funcNo));
         }
         expect(TokenType.L_PAREN);
@@ -945,7 +945,6 @@ public final class Analyser {
             expect(TokenType.COLON);
             valueType = strToIdentType(expect(TokenType.TY).getValueString());
             addLocalSymbol(funcName, funcNo, paramName, symbolType, valueType, curPos);
-            this.binCodeFile.addFuncParamNum(funcNo);
         } while (nextIf(TokenType.COMMA) != null);
     }
 }
