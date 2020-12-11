@@ -605,28 +605,24 @@ public final class Analyser {
                 expect(TokenType.R_PAREN);
                 retType = IdentType.INT;
                 // TODO
-//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_I));
                 return new OperandItem(retType, pos);
             case "getchar":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.INT;
                 // TODO
-                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_C));
                 return new OperandItem(retType, pos);
             case "getdouble":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.DOUBLE;
                 // TODO
-                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.SCAN_F));
                 return new OperandItem(retType, pos);
             case "putln":
                 expect(TokenType.R_PAREN);
                 retType = IdentType.VOID;
                 // TODO
-//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINTLN));
                 return new OperandItem(retType, pos);
             case "putint":
@@ -636,7 +632,6 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
-//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_I));
                 return new OperandItem(retType, pos);
             case "putchar":
@@ -646,7 +641,6 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
-//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_C));
                 return new OperandItem(retType, pos);
             case "putstr":
@@ -656,7 +650,6 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
-//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_S));
                 return new OperandItem(retType, pos);
             case "putdouble":
@@ -666,7 +659,6 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TypeMismatch, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
-//                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STACKALLOC, 1));
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.PRINT_F));
                 return new OperandItem(retType, pos);
             default: {
@@ -690,7 +682,7 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.TooManyOrTooFewArguments, pos);
                 expect(TokenType.R_PAREN);
                 // TODO
-                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.CALLNAME, callNo));
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.CALL, callNo));
                 return new OperandItem(retType, pos);
             }
         }
