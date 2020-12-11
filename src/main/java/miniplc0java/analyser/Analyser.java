@@ -848,12 +848,15 @@ public final class Analyser {
                 analyseBlockStmt(funcName, funcNo, brPos);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
+                this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
             } else if (check(TokenType.IF)) { // if_stmt
                 analyseIfStmt(funcName, funcNo, brPos);
                 int offset = this.binCodeFile.getInsNum(funcNo) - br_exit - 1;
                 this.binCodeFile.getInstruction(funcNo, br_exit).setParam(offset);
                 this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
             }
+        } else {
+            this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.BR, 0));
         }
     }
 
