@@ -66,12 +66,8 @@ public class Tokenizer {
                 throw new TokenizeError(ErrorCode.DoubleOverflow, startPos);
             }
         } else if ((!isDouble) && str.matches("^\\d+$")) {
-            try {
-                Integer value = Integer.parseInt(str);
-                return new Token(TokenType.UINT_LITERAL, value, startPos, startPos);
-            } catch (Exception e) {
-                throw new TokenizeError(ErrorCode.IntegerOverflow, startPos);
-            }
+            Long value = Long.parseLong(str);
+            return new Token(TokenType.UINT_LITERAL, value, startPos, startPos);
         } else {
             throw new TokenizeError(ErrorCode.InvalidInput, startPos);
         }
