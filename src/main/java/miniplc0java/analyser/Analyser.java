@@ -351,7 +351,7 @@ public final class Analyser {
         Instruction instruction;
         if (check(TokenType.UINT_LITERAL)) { // UINT_LITERAL
             Token token = next();
-            instruction = createInstruction(Operation.PUSH, (int) token.getValue());
+            instruction = createInstruction(Operation.PUSH, (Long) token.getValue());
             this.binCodeFile.addInstruction(funcNo, instruction);
             return new OperandItem(IdentType.INT, token.getStartPos());
         } else if (check(TokenType.CHAR_LITERAL)) { // CHAR_LITERAL
@@ -857,7 +857,7 @@ public final class Analyser {
             this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.ARGA, 0));
             IdentType valueType = analyseExprOPG(funcName, funcNo).getType();
             expect(TokenType.SEMICOLON);
-            if (valueType != funcRetType){
+            if (valueType != funcRetType) {
                 if ((valueType != IdentType.INT && valueType != IdentType.CHAR) || (funcRetType != IdentType.INT && funcRetType != IdentType.CHAR))
                     throw new AnalyzeError(ErrorCode.ReturnValueTypeMismatched, peek().getStartPos());
             }
