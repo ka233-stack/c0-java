@@ -45,6 +45,7 @@ public final class Analyser {
         private static final long serialVersionUID = 1L;
 
         {
+            put(TokenType.AS, 100);
             put(TokenType.MUL, 20);
             put(TokenType.DIV, 20);
             put(TokenType.PLUS, 10);
