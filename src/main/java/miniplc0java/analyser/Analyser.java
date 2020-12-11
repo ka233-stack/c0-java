@@ -870,6 +870,8 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.ReturnValueTypeMismatched, peek().getStartPos());
             }
             this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.STORE_64));
+        } else if (funcRetType != IdentType.VOID) {
+            throw new AnalyzeError(ErrorCode.ReturnValueTypeMismatched, peek().getStartPos());
         }
         this.binCodeFile.addInstruction(funcNo, createInstruction(Operation.RET));
     }
